@@ -31,7 +31,7 @@ GIT_CFLAG = -DGIT_COMMIT=\"$(GIT_COMMIT)\"
 
 # Note the -I option specifies the include directory for header files, so don't need to put them
 # explicitly in the make commands listed below
-CFLAGS = -o $@ -Wall -O -g -std=c++11 $(GIT_CFLAG) -I$(INC_DIR) -I$(SRC_DIR)
+CFLAGS = -o $@ -Wall -O -g -std=c++17 $(GIT_CFLAG) -I$(INC_DIR) -I$(SRC_DIR)
 
 LFLAGS = -Wall -O -g $(ROOTCFLAGS) 
 
