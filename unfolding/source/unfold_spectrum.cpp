@@ -392,8 +392,6 @@ int main(int argc, char* argv[])
         std::vector<std::vector<double>> sampled_spectra; // dimensions: num_uncertainty_samples x num_bins
         std::vector<double> sampled_dose; // dimension: num_uncertainty_samples
 
-        std::cout << "measurement 0: " << measurements[0] << "\n";
-
         for (int i_samp = 0; i_samp < settings.num_uncertainty_samples; i_samp++) {
             std::vector<double> sampled_measurements; // dimension: num_measurements
             std::vector<double> sampled_mlem_ratio; // dimension: num_measurements
@@ -409,12 +407,12 @@ int main(int argc, char* argv[])
                     double sampled_value = 0;
                     
                     for (int i_samp =0; i_samp < settings.num_meas_per_shell; i_samp++) {
-                        sampled_value += poisson(measurements[i_meas]);
+                        // Total number of counts is Poisson distributed, and measurements are in CPS
+                        sampled_value += poisson(measurements[i_meas]*settings.duration)/settings.duration;
                     }
                     sampled_value /= settings.num_meas_per_shell;
                     sampled_measurements.push_back(sampled_value);
                 }
-                std::cout << "sampled: " << sampled_measurements[0] << "\n";
             }
 
             // If doing Gaussian-sampling to generate pseudo-measurement set
