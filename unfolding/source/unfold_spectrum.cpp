@@ -18,6 +18,7 @@
 #include <chrono>
 #include <random>
 #include <stdlib.h>
+#include <filesystem>
 #include <vector>
 
 // Local
@@ -84,6 +85,12 @@ int main(int argc, char* argv[])
     // Handle nC input (save nC values for report, then convert to CPS)
     if (settings.meas_units == "nc") {
         measurements_nc = measurements;
+        std::cout<<settings.norm;
+        std::cout<<"\n";
+        std::cout<<settings.f_factor;
+        std::cout<<"\n";
+        std::cout<<settings.duration;
+        std::cout<<"\n";
         for (int i_meas=0; i_meas < num_measurements; i_meas++) {
             measurements[i_meas] = measurements[i_meas]*settings.norm/settings.f_factor/settings.duration;
         }
@@ -235,10 +242,48 @@ int main(int argc, char* argv[])
 
     // Unfold spectrum according to user-specified algorithm
     if (settings.algorithm == "mlem") {
-        num_iterations = runMLEM(settings.cutoff, settings.error, num_measurements, num_bins,
-            measurements, spectrum, nns_response, normalized_response, mlem_ratio, mlem_correction, 
-            mlem_estimate
-        );
+        if (settings.plotting_iteration_increment == 0) {
+            num_iterations = runMLEM(settings.cutoff, settings.error, num_measurements, num_bins,
+                measurements, spectrum, nns_response, normalized_response, mlem_ratio, mlem_correction, 
+                mlem_estimate
+            );
+        }
+        // Plot spectrum every settings.plotting_iteration_increment
+        else {
+            // Create folder for the plots
+            std::string figures_folder = "output/figures_" + settings.irradiation_conditions;
+            std::filesystem::create_directory(figures_folder);            
+            
+            if (settings.error != 0) {
+                throw std::logic_error("mlem error must be 0 for plotting_iteration_increment");
+            }
+
+            // Create a vector of 0s to use as the spectrum uncertainty in the plotting function
+            std::vector<double> zero_uncertainty(spectrum.size(), 0.0);
+            
+            // Iterations completed before each loop step
+            int iterations_done = 0;
+            int iterations_limit = settings.iteration_max - settings.plotting_iteration_increment;
+            for (int current_iterations = settings.iteration_min; current_iterations <= iterations_limit; current_iterations += settings.plotting_iteration_increment) {
+                // current_iterations is total number of iterations that are to be completed by the end of the loop step
+                // So number of iterations to do in loop step is current_iterations-iterations_done
+                num_iterations = runMLEM(current_iterations-iterations_done, 0, num_measurements, num_bins,
+                    measurements, spectrum, nns_response, normalized_response, mlem_ratio, mlem_correction, 
+                    mlem_estimate
+                );
+
+                // Save figure
+                std::string path_figure = figures_folder + "/iterations_" + std::to_string(iterations_done + num_iterations) + ".png";
+                plotSpectrum(path_figure, settings.irradiation_conditions + "  " + std::to_string(iterations_done + num_iterations), num_measurements, 
+                    num_bins, energy_bins, spectrum, zero_uncertainty, zero_uncertainty
+                );
+                
+                iterations_done += num_iterations;
+                
+            }
+            
+            return 0;
+        }
     }
     else if (settings.algorithm == "mlemstop") {
         j_threshold = determineJThreshold(num_measurements,measurements,settings.cps_crossover);
@@ -347,6 +392,8 @@ int main(int argc, char* argv[])
         std::vector<std::vector<double>> sampled_spectra; // dimensions: num_uncertainty_samples x num_bins
         std::vector<double> sampled_dose; // dimension: num_uncertainty_samples
 
+        std::cout << "measurement 0: " << measurements[0] << "\n";
+
         for (int i_samp = 0; i_samp < settings.num_uncertainty_samples; i_samp++) {
             std::vector<double> sampled_measurements; // dimension: num_measurements
             std::vector<double> sampled_mlem_ratio; // dimension: num_measurements
@@ -360,13 +407,16 @@ int main(int argc, char* argv[])
             if (settings.uncertainty_type == "poisson") {
                 for (int i_meas = 0; i_meas < num_measurements; i_meas++) {
                     double sampled_value = 0;
+                    
                     for (int i_samp =0; i_samp < settings.num_meas_per_shell; i_samp++) {
                         sampled_value += poisson(measurements[i_meas]);
                     }
                     sampled_value /= settings.num_meas_per_shell;
                     sampled_measurements.push_back(sampled_value);
                 }
+                std::cout << "sampled: " << sampled_measurements[0] << "\n";
             }
+
             // If doing Gaussian-sampling to generate pseudo-measurement set
             else if (settings.uncertainty_type == "gaussian") {
                 for (int i_meas = 0; i_meas < num_measurements; i_meas++) {

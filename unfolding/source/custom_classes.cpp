@@ -24,6 +24,9 @@ UnfoldingSettings::UnfoldingSettings() {
     num_uncertainty_samples = 50;
     num_meas_per_shell = 1;
     meas_units = "nc";
+    iteration_min = 100;
+    iteration_max = 10000;
+    plotting_iteration_increment = 0;
     // Measurement specs
     dose_mu = 0;
     doserate_mu = 0;
@@ -36,8 +39,6 @@ UnfoldingSettings::UnfoldingSettings() {
     cps_crossover = 30000;
     sigma_j=0.5;
     // Optimize specific
-    iteration_min = 100;
-    iteration_max = 10000;
     iteration_increment = 100;
     beta_min = 1E-10;
     beta_max = 1E-8;
@@ -102,6 +103,8 @@ void UnfoldingSettings::set_setting(std::string settings_name, std::string setti
         this->set_iteration_max(atoi(settings_value.c_str()));
     else if (settings_name == "iteration_increment")
         this->set_iteration_increment(atoi(settings_value.c_str()));
+    else if (settings_name == "plotting_iteration_increment")
+        this->set_plotting_iteration_increment(atoi(settings_value.c_str()));
     else if (settings_name == "beta_min")
         this->set_beta_min(atof(settings_value.c_str()));
     else if (settings_name == "beta_max")
@@ -201,6 +204,9 @@ void UnfoldingSettings::set_iteration_max(int iteration_max) {
 }
 void UnfoldingSettings::set_iteration_increment(int iteration_increment) {
     this->iteration_increment = iteration_increment;
+}
+void UnfoldingSettings::set_plotting_iteration_increment(int plotting_iteration_increment) {
+    this->plotting_iteration_increment = plotting_iteration_increment;
 }
 void UnfoldingSettings::set_beta_min(double beta_min) {
     this->beta_min = beta_min;

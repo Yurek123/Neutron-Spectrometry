@@ -56,8 +56,12 @@ int plotSpectrum(std::string path_figure, std::string irradiation_conditions,
     // Setup plot of the spectrum
     int NBINS = num_bins-1;
 
-    TCanvas *c1 = new TCanvas("c1","c1",2400,1800); // Resulution of the graph (px) specified in parameters
-    TH1F *h1 = new TH1F("h1","h1",NBINS,edges);
+
+    // TCanvas *c1 = new TCanvas("c1","c1",2400,1800); // Resulution of the graph (px) specified in parameters
+    // TH1F *h1 = new TH1F("h1","h1",NBINS,edges);
+
+    TCanvas *c1 = new TCanvas(path_figure.c_str(),path_figure.c_str(),2400,1800); // Resulution of the graph (px) specified in parameters
+    TH1F *h1 = new TH1F(path_figure.c_str(),path_figure.c_str(),NBINS,edges);
 
     for (int i_bin = 0; i_bin < num_bins; i_bin++)
     {

@@ -106,6 +106,9 @@ obtain a neutron fluence spectrum.
 | `generate_figure` | `1` | `1` = generate figure, `0` = no figure. |
 | `generate_report` | `1` | `1` = generate report, `0` = no report. |
 | `meas_units` | `nc` |  Specify units of measured values {`nc`,`cps`}. |
+| `plotting_iteration_increment` | `0` | If not 0, will plot the spectrum for different number of MLEM iterations, from `iteration_min` to `iteration_max`. Only for `algorithm=mlem`. |
+| `iteration_max` | `1000` | See `plotting_iteration_increment` |
+| `iteration_min` | `100` | See `plotting_iteration_increment` |
 | `mlem_cutoff` | `15000` | Maximum # of MLEM iterations. |
 | `mlem_max_error` | `0` | Maximum (target) relative error between measured and reconstructed values, below which MLEM terminates. To unfold for a fixed # of iterations, set `algorithm=mlem` and `mlem_max_error=0`, then set `mlem_cutoff` accordingly. |
 | `nns_normalization` | `1.14` | NNS-dependent normalization factor. |

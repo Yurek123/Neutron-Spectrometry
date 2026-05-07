@@ -55,6 +55,7 @@ class UnfoldingSettings{
         int iteration_min;
         int iteration_max;
         int iteration_increment;
+        int plotting_iteration_increment;
         double beta_min;
         double beta_max;
         std::string parameter_of_interest;
@@ -87,6 +88,7 @@ class UnfoldingSettings{
         void set_iteration_min(int);
         void set_iteration_max(int);
         void set_iteration_increment(int);
+        void set_plotting_iteration_increment(int);
         void set_beta_min(double);
         void set_beta_max(double);
         void set_parameter_of_interest(std::string);
