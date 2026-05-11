@@ -25,7 +25,8 @@ class UnfoldingSettings{
         int cutoff; 
         std::string uncertainty_type;
         int num_uncertainty_samples;
-        int num_meas_per_shell; 
+        int num_meas_per_shell;
+        int std_input;
         std::string meas_units; 
 
         int dose_mu;
@@ -76,6 +77,7 @@ class UnfoldingSettings{
         void set_uncertainty_type(std::string);
         void set_num_uncertainty_samples(int);
         void set_num_meas_per_shell(int);
+        void set_std_input(int);
         void set_meas_units(std::string);
         void set_dose_mu(int);
         void set_doserate_mu(int);

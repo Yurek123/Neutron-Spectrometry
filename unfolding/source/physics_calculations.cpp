@@ -61,6 +61,30 @@ int processMeasurements(int num_measurements, int num_meas_per_shell, std::vecto
 }
 
 //==================================================================================================
+// Process measurements if uncertainties are included: take the second half of the values in measurements 
+// as the actual measurements, and the first half as the associated errors
+// (in the input file the measurements are included before the uncertainties, but the input order 
+// is reversed in the measurements vector)
+//==================================================================================================
+void processMeasurementsStd(std::vector<double>& measurements, std::vector<double>& std_errors) {
+    if (measurements.size() % 2 != 0) {
+        throw std::invalid_argument(
+            "number of input lines is not even; a standard deviation error must be given for each measurement"
+        );
+    }
+    std::size_t half = measurements.size() / 2;
+    std_errors.assign(measurements.begin(), measurements.begin() + half);
+    measurements.erase(measurements.begin(), measurements.begin() + half);
+    for (std::size_t i = 0; i < std_errors.size(); i++) {
+        std::cout << std_errors[i] << "\n";
+    }
+    for (std::size_t i = 0; i < measurements.size(); i++) {
+        std::cout << measurements[i] << "\n";
+    }
+}
+
+
+//==================================================================================================
 // Get the mean value of a data vector containing doubles
 //==================================================================================================
 double getMeanValueD(std::vector<double>& data) {

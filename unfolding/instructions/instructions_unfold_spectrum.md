@@ -29,6 +29,7 @@ obtain a neutron fluence spectrum.
     * Structure of the data portion is such that measured data can be readily copy/pasted from Google Sheets.
 * Input values should already have noise and photon contamination removed.
 * If multiple measurements were obtained for the same moderator shell, input them sequentially on subsequent lines and adjust the `num_meas_per_shell` setting accordingly.
+* Additionally, the statistical uncertainty (standard deviation) of the measurements can be included in the measurements file, using the format shown in `input/template_measurements_w_uncertainty.txt`. This requires the settings `std_input=1` and `uncertainty_type=gaussian`. Only one measurement per shell should be included in the input file; this can be the average of multiple measurements, in which case the standard error of the mean can be inputted as the uncertainty. Note that this only affects the statistical uncertainty estimates in the unfolded spectrum. 
 
 ### Settings file
 * This file contains all of the user-configurable settings for the application.
@@ -124,3 +125,4 @@ obtain a neutron fluence spectrum.
 | `path_system_response` | `input/response_nns_he3.csv` | Pathname to [NNS response functions file](#nns-response-functions). |
 | `prior` | `mrp` | Type of prior calculation to be done if `algorithm=map`.<br>`quadratic`: smoothing, no edge preservation.<br>`mrp`: median root prior; preserves edges by not penalizing regions of monotonic increase or decrease.<br>`medianrp`: mean root prior; custom written; similar to `mrp` but based on mean of neighbours. |
 | `uncertainty_type` | `poisson` | Method used to calculate uncertainty region around the unfolded spectrum {`poisson`,`gaussian`,`j_bounds`}. |
+| `std_input` | `0` | This should be set to `1` if the uncertainties are included in the [measurements file](#measurements-file).

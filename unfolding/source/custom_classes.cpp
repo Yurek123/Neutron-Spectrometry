@@ -23,6 +23,7 @@ UnfoldingSettings::UnfoldingSettings() {
     uncertainty_type = "poisson";
     num_uncertainty_samples = 50;
     num_meas_per_shell = 1;
+    std_input = 0;
     meas_units = "nc";
     iteration_min = 100;
     iteration_max = 10000;
@@ -79,6 +80,8 @@ void UnfoldingSettings::set_setting(std::string settings_name, std::string setti
         this->set_num_uncertainty_samples(atoi(settings_value.c_str()));
     else if (settings_name == "num_meas_per_shell")
         this->set_num_meas_per_shell(atoi(settings_value.c_str()));
+    else if (settings_name == "std_input")
+        this->set_std_input(atoi(settings_value.c_str()));
     else if (settings_name == "meas_units")
         this->set_meas_units(settings_value);
     else if (settings_name == "dose_mu")
@@ -168,6 +171,9 @@ void UnfoldingSettings::set_num_uncertainty_samples(int num_uncertainty_samples)
 }
 void UnfoldingSettings::set_num_meas_per_shell(int num_meas_per_shell) {
     this->num_meas_per_shell = num_meas_per_shell;
+}
+void UnfoldingSettings::set_std_input(int std_input) {
+    this->std_input = std_input;
 }
 void UnfoldingSettings::set_meas_units(std::string meas_units) {
     this->meas_units = meas_units;

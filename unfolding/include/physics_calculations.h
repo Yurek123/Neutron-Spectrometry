@@ -9,6 +9,9 @@
 int processMeasurements(int num_measurements, int num_meas_per_shell, std::vector<double>& measurements, 
     std::vector<double>& std_errors);
 
+void processMeasurementsStd(std::vector<double>& measurements, 
+    std::vector<double>& std_errors);
+
 double getMeanValueD(std::vector<double>& data);
 
 double getSampleMeanStandardErrorD(std::vector<double>& data, double mean);

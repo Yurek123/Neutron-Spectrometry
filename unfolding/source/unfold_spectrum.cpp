@@ -98,12 +98,25 @@ int main(int argc, char* argv[])
 
     // Process data wherein multiple measurements were acquired for each shell
     std::vector<double> std_errors;
-    if (settings.num_meas_per_shell > 1) {
+    if (settings.std_input) {
+        processMeasurementsStd(measurements,std_errors);
+        num_measurements = measurements.size();
+        if (settings.uncertainty_type != "gaussian") {
+            throw std::logic_error("uncertainty type must be gaussian if standard deviation errors are inputted");            
+        }
+        if (settings.num_meas_per_shell != 1) {
+            throw std::logic_error(
+                "num_meas_per_shell must be 1 if standard deviation errors are inputted"
+                " (for multiple measurements, input the average, and input the standard error of the mean as the error)"
+                );
+        }
+    }
+    else if (settings.num_meas_per_shell > 1) {
         processMeasurements(num_measurements,settings.num_meas_per_shell,measurements,std_errors);
         num_measurements = num_measurements / settings.num_meas_per_shell;
     }
     // Do not allow use of gaussian sampling technique if only one measurement per shell is
-    // provided, as the standard deviation is unknown.
+    // provided, as the standard deviation is unknown (unless input_std = 1).
     else if (settings.num_meas_per_shell == 1 && settings.uncertainty_type == "gaussian"){
         throw std::logic_error("Cannot generate Gaussian-sampled pseudo-measurements with only single measurement per shell.");
     }
@@ -392,6 +405,7 @@ int main(int argc, char* argv[])
         std::vector<std::vector<double>> sampled_spectra; // dimensions: num_uncertainty_samples x num_bins
         std::vector<double> sampled_dose; // dimension: num_uncertainty_samples
 
+        
         for (int i_samp = 0; i_samp < settings.num_uncertainty_samples; i_samp++) {
             std::vector<double> sampled_measurements; // dimension: num_measurements
             std::vector<double> sampled_mlem_ratio; // dimension: num_measurements
@@ -414,14 +428,13 @@ int main(int argc, char* argv[])
                     sampled_measurements.push_back(sampled_value);
                 }
             }
-
+            
             // If doing Gaussian-sampling to generate pseudo-measurement set
             else if (settings.uncertainty_type == "gaussian") {
                 for (int i_meas = 0; i_meas < num_measurements; i_meas++) {
                     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
                     std::default_random_engine generator (seed);
                     std::normal_distribution<double> distribution(measurements[i_meas],std_errors[i_meas]);
-
                     double new_sample = distribution(generator);
                     sampled_measurements.push_back(new_sample);
                 }
@@ -433,6 +446,7 @@ int main(int argc, char* argv[])
                     sampled_spectrum, nns_response, normalized_response, sampled_mlem_ratio, 
                     sampled_mlem_correction, sampled_mlem_estimate
                 );
+
             }
             // MLEM-STOP requires special handling of unfolding the sampled measurement sets.
             // Despite best efforts, sometimes MLEM-STOP will never converge for some samples. 
