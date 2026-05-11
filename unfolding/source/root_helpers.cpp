@@ -35,6 +35,8 @@
 //==================================================================================================
 // Plot a single flux spectrum (and its uncertainty) as a function of energy. Output the generated
 // plot to a file using arguments passed to the function.
+// Because the energy bins file only contains the lower boundaries of energy bins, the last energy 
+// the last energy bin is assumed to have the same log-width as the previous
 //==================================================================================================
 int plotSpectrum(std::string path_figure, std::string irradiation_conditions, 
     int num_measurements, int num_bins, std::vector<double> &energy_bins, std::vector<double> &spectrum, 
@@ -44,7 +46,8 @@ int plotSpectrum(std::string path_figure, std::string irradiation_conditions,
     // Convert vectors to arrays for input into ROOT functions
     double ini_line[num_bins];
     double bins_line[num_bins];
-    double_t edges[num_bins];
+    // double_t edges[num_bins];
+    double_t edges[num_bins+1];
 
     for (int i_bin = 0; i_bin < num_bins; i_bin++)
     {
@@ -53,8 +56,12 @@ int plotSpectrum(std::string path_figure, std::string irradiation_conditions,
         edges[i_bin] = bins_line[i_bin];
     }
 
+    //add the last edge. Assume the same log spacing between edges as the last pair
+    edges[num_bins] = energy_bins[num_bins-1]*energy_bins[num_bins-1]/energy_bins[num_bins-2];
+
     // Setup plot of the spectrum
-    int NBINS = num_bins-1;
+    // int NBINS = num_bins-1;
+    int NBINS = num_bins;
 
 
     // TCanvas *c1 = new TCanvas("c1","c1",2400,1800); // Resulution of the graph (px) specified in parameters
@@ -68,9 +75,18 @@ int plotSpectrum(std::string path_figure, std::string irradiation_conditions,
         h1->Fill(energy_bins[i_bin], spectrum[i_bin]);
     }
 
+    // make the plot not cut off uncertainty indicators
+    double y_max = 0;
+    for (int i_bin = 0; i_bin < num_bins; i_bin++) {
+        std::cout << i_bin << "  " << spectrum[i_bin] << "  " << spectrum_uncertainty_upper[i_bin] << "\n";
+        double top = spectrum[i_bin] + spectrum_uncertainty_upper[i_bin];
+        if (top > y_max) y_max = top;
+    }
+    h1->SetMaximum(y_max * 1.05);
+
     h1->SetStats(0);   // Do not show the stats (mean and standard deviation);
     h1->SetLineColor(kBlack);
-    h1->SetLineWidth(10);
+    h1->SetLineWidth(4);
     std::ostringstream plot_title_stream;
     plot_title_stream << "Neutron fluence spectrum: " << irradiation_conditions;
     std::string plot_title = plot_title_stream.str();
@@ -99,11 +115,11 @@ int plotSpectrum(std::string path_figure, std::string irradiation_conditions,
     std::vector<double> xerror_upper_array;
     for (int i_bin = 0; i_bin < num_bins; i_bin++)
     {
-        bins_avg.push_back((energy_bins[i_bin] + energy_bins[i_bin+1])/2);
-        double log_avg = sqrt(energy_bins[i_bin]*energy_bins[i_bin+1]);
+        bins_avg.push_back((energy_bins[i_bin] + edges[i_bin+1])/2);
+        double log_avg = sqrt(energy_bins[i_bin]*edges[i_bin+1]);
         bins_log_avg.push_back(log_avg);
         xerror_lower_array.push_back(log_avg - energy_bins[i_bin]);
-        xerror_upper_array.push_back(energy_bins[i_bin+1] - log_avg);
+        xerror_upper_array.push_back(edges[i_bin+1] - log_avg);
         // error_upper_array.push_back(spectrum_uncertainty_upper[i_bin]);
         // error_lower_array.push_back(spectrum_uncertainty_lower[i_bin]);
     }
