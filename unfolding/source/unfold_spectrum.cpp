@@ -85,12 +85,6 @@ int main(int argc, char* argv[])
     // Handle nC input (save nC values for report, then convert to CPS)
     if (settings.meas_units == "nc") {
         measurements_nc = measurements;
-        std::cout<<settings.norm;
-        std::cout<<"\n";
-        std::cout<<settings.f_factor;
-        std::cout<<"\n";
-        std::cout<<settings.duration;
-        std::cout<<"\n";
         for (int i_meas=0; i_meas < num_measurements; i_meas++) {
             measurements[i_meas] = measurements[i_meas]*settings.norm/settings.f_factor/settings.duration;
         }
@@ -162,7 +156,7 @@ int main(int argc, char* argv[])
     }
     std::cout << '\n';
 
-    if (settings.num_meas_per_shell > 1) {
+    if (settings.num_meas_per_shell > 1 || settings.std_input) {
         std::cout << "The standard errors in CPS are:" << '\n'; // newline
 
         //Loop over the data matrix, display each value
@@ -263,12 +257,19 @@ int main(int argc, char* argv[])
         }
         // Plot spectrum every settings.plotting_iteration_increment
         else {
-            // Create folder for the plots
-            std::string figures_folder = "output/figures_" + settings.irradiation_conditions;
-            std::filesystem::create_directory(figures_folder);            
+            // Create folder for these plots
+            std::string figures_folder = settings.path_iteration_increment_figures;
+            if (figures_folder.empty()) {
+                figures_folder = "output/iteration_increment_figures_" + settings.irradiation_conditions;
+            }
+            std::filesystem::create_directories(figures_folder);
             
             if (settings.error != 0) {
                 throw std::logic_error("mlem error must be 0 for plotting_iteration_increment");
+            }
+
+            if (settings.plotting_iteration_max < settings.plotting_iteration_min) {
+                throw std::logic_error("plotting_iteration_max must not be less than plotting_iteration_min");
             }
 
             // Create a vector of 0s to use as the spectrum uncertainty in the plotting function
@@ -276,8 +277,8 @@ int main(int argc, char* argv[])
             
             // Iterations completed before each loop step
             int iterations_done = 0;
-            int iterations_limit = settings.iteration_max - settings.plotting_iteration_increment;
-            for (int current_iterations = settings.iteration_min; current_iterations <= iterations_limit; current_iterations += settings.plotting_iteration_increment) {
+            int iterations_limit = settings.plotting_iteration_max - settings.plotting_iteration_increment;
+            for (int current_iterations = settings.plotting_iteration_min; current_iterations <= iterations_limit; current_iterations += settings.plotting_iteration_increment) {
                 // current_iterations is total number of iterations that are to be completed by the end of the loop step
                 // So number of iterations to do in loop step is current_iterations-iterations_done
                 num_iterations = runMLEM(current_iterations-iterations_done, 0, num_measurements, num_bins,

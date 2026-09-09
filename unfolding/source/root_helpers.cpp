@@ -46,7 +46,6 @@ int plotSpectrum(std::string path_figure, std::string irradiation_conditions,
     // Convert vectors to arrays for input into ROOT functions
     double ini_line[num_bins];
     double bins_line[num_bins];
-    // double_t edges[num_bins];
     double_t edges[num_bins+1];
 
     for (int i_bin = 0; i_bin < num_bins; i_bin++)
@@ -60,15 +59,15 @@ int plotSpectrum(std::string path_figure, std::string irradiation_conditions,
     edges[num_bins] = energy_bins[num_bins-1]*energy_bins[num_bins-1]/energy_bins[num_bins-2];
 
     // Setup plot of the spectrum
-    // int NBINS = num_bins-1;
     int NBINS = num_bins;
 
 
     // TCanvas *c1 = new TCanvas("c1","c1",2400,1800); // Resulution of the graph (px) specified in parameters
     // TH1F *h1 = new TH1F("h1","h1",NBINS,edges);
 
-    TCanvas *c1 = new TCanvas(path_figure.c_str(),path_figure.c_str(),2400,1800); // Resulution of the graph (px) specified in parameters
-    TH1F *h1 = new TH1F(path_figure.c_str(),path_figure.c_str(),NBINS,edges);
+    //use path_figure as names for these two objects, so that if multiple plots are created in one run, they are named uniquely
+    TCanvas *c1 = new TCanvas(path_figure.c_str(),"c1",2400,1800); // Resulution of the graph (px) specified in parameters
+    TH1F *h1 = new TH1F(path_figure.c_str(),"h1",NBINS,edges);
 
     for (int i_bin = 0; i_bin < num_bins; i_bin++)
     {
@@ -78,7 +77,6 @@ int plotSpectrum(std::string path_figure, std::string irradiation_conditions,
     // make the plot not cut off uncertainty indicators
     double y_max = 0;
     for (int i_bin = 0; i_bin < num_bins; i_bin++) {
-        std::cout << i_bin << "  " << spectrum[i_bin] << "  " << spectrum_uncertainty_upper[i_bin] << "\n";
         double top = spectrum[i_bin] + spectrum_uncertainty_upper[i_bin];
         if (top > y_max) y_max = top;
     }
@@ -86,7 +84,7 @@ int plotSpectrum(std::string path_figure, std::string irradiation_conditions,
 
     h1->SetStats(0);   // Do not show the stats (mean and standard deviation);
     h1->SetLineColor(kBlack);
-    h1->SetLineWidth(4);
+    h1->SetLineWidth(10);
     std::ostringstream plot_title_stream;
     plot_title_stream << "Neutron fluence spectrum: " << irradiation_conditions;
     std::string plot_title = plot_title_stream.str();
@@ -104,8 +102,6 @@ int plotSpectrum(std::string path_figure, std::string irradiation_conditions,
 
     // convert spectrum uncertainy from vector to array
     // store average bin values of adjacent bins
-    // double_t s_line[NBINS]; 
-    // double_t bins_line_avr[NBINS]; 
     std::vector<double> s_line;
     std::vector<double> bins_line_avr;
 

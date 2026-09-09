@@ -75,12 +75,6 @@ void processMeasurementsStd(std::vector<double>& measurements, std::vector<doubl
     std::size_t half = measurements.size() / 2;
     std_errors.assign(measurements.begin(), measurements.begin() + half);
     measurements.erase(measurements.begin(), measurements.begin() + half);
-    for (std::size_t i = 0; i < std_errors.size(); i++) {
-        std::cout << std_errors[i] << "\n";
-    }
-    for (std::size_t i = 0; i < measurements.size(); i++) {
-        std::cout << measurements[i] << "\n";
-    }
 }
 
 

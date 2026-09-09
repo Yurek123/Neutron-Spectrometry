@@ -29,7 +29,7 @@ obtain a neutron fluence spectrum.
     * Structure of the data portion is such that measured data can be readily copy/pasted from Google Sheets.
 * Input values should already have noise and photon contamination removed.
 * If multiple measurements were obtained for the same moderator shell, input them sequentially on subsequent lines and adjust the `num_meas_per_shell` setting accordingly.
-* Additionally, the statistical uncertainty (standard deviation) of the measurements can be included in the measurements file, using the format shown in `input/template_measurements_w_uncertainty.txt`. This requires the settings `std_input=1` and `uncertainty_type=gaussian`. Only one measurement per shell should be included in the input file; this can be the average of multiple measurements, in which case the standard error of the mean can be inputted as the uncertainty. Note that this only affects the statistical uncertainty estimates in the unfolded spectrum. 
+* Additionally, the statistical uncertainty (standard deviation) of the measurements can be included in the measurements file, using the format shown in `input/template_measurements_w_uncertainty.txt`. This requires the settings `std_input=1` and `uncertainty_type=gaussian`. Only one measurement per shell should be included in the input file; this can be the average of multiple measurements, in which case the standard error of the mean can be inputted as the uncertainty. The uncertainty is only used to estimate the statistical uncertainty in the unfolded spectrum. 
 
 ### Settings file
 * This file contains all of the user-configurable settings for the application.
@@ -96,6 +96,11 @@ obtain a neutron fluence spectrum.
 * Can be used to check and archive previous unfoldings.
 * File is set via the `path_report` setting.
 
+### Spectrum figures at different numbers of MLEM iterations
+* If a value is specified for the `plotting_iteration_increment` setting, figures will be generated for different numbers of iterations of the MLEM algorithm. No other output will be generated in this case. 
+* No other output will be generated in this case. 
+
+
 ## Settings
 
 | Name | Default value | description |
@@ -107,9 +112,6 @@ obtain a neutron fluence spectrum.
 | `generate_figure` | `1` | `1` = generate figure, `0` = no figure. |
 | `generate_report` | `1` | `1` = generate report, `0` = no report. |
 | `meas_units` | `nc` |  Specify units of measured values {`nc`,`cps`}. |
-| `plotting_iteration_increment` | `0` | If not 0, will plot the spectrum for different number of MLEM iterations, from `iteration_min` to `iteration_max`. Only for `algorithm=mlem`. |
-| `iteration_max` | `1000` | See `plotting_iteration_increment` |
-| `iteration_min` | `100` | See `plotting_iteration_increment` |
 | `mlem_cutoff` | `15000` | Maximum # of MLEM iterations. |
 | `mlem_max_error` | `0` | Maximum (target) relative error between measured and reconstructed values, below which MLEM terminates. To unfold for a fixed # of iterations, set `algorithm=mlem` and `mlem_max_error=0`, then set `mlem_cutoff` accordingly. |
 | `nns_normalization` | `1.14` | NNS-dependent normalization factor. |
@@ -119,10 +121,14 @@ obtain a neutron fluence spectrum.
 | `path_figure` | `output/figure_<name>` | Pathname to output [unfolded spectrum figure file](#unfolded-spectrum-figure). `name` determined from measurements file header. |
 | `path_icrp_factors` | `input/`<br>`icrp_conversion_coefficients` | Pathname to [file containing ambient dose equivalent conversion coefficients](#ambient-dose-equivalent-conversion-factors) [pSv cm^2]. |
 | `path_input_spectrum` | `input/spectrum_step.csv` | Pathname to [input (guess) spectrum file](#guess-spectrum). |
+| `path_iteration_increment_figures` | `output/iteration_increment_figures_<name>` | Path to the folder in which figures of the spectrum for different number of MLEM iterations will be generated, if `plotting_iteration_increment` is not 0. Folder will be created if it does not exist. `name` determined from measurements file header. |
 | `path_measurements` | `input/measurements.txt` | Pathname to [NNS measurements file](#measurements-file). |
 | `path_output_spectra` | `output/output_spectra.csv` | Pathname to output [unfolded spectrum CSV](#unfolded-spectrum-csv-file) file. |
 | `path_report` | `output/report_<name>` | Pathname to output [unfolding report file](#unfolding-report). `name` determined from measurements file header. |
 | `path_system_response` | `input/response_nns_he3.csv` | Pathname to [NNS response functions file](#nns-response-functions). |
+| `plotting_iteration_increment` | `0` | If not 0, will generate figures of the spectrum for different number of MLEM iterations, from `plotting_iteration_min` to `plotting_iteration_max`. Only for `algorithm=mlem`. |
+| `plotting_iteration_max` | `5000` | See `plotting_iteration_increment` |
+| `plotting_iteration_min` | `100` | See `plotting_iteration_increment` |
 | `prior` | `mrp` | Type of prior calculation to be done if `algorithm=map`.<br>`quadratic`: smoothing, no edge preservation.<br>`mrp`: median root prior; preserves edges by not penalizing regions of monotonic increase or decrease.<br>`medianrp`: mean root prior; custom written; similar to `mrp` but based on mean of neighbours. |
 | `uncertainty_type` | `poisson` | Method used to calculate uncertainty region around the unfolded spectrum {`poisson`,`gaussian`,`j_bounds`}. |
 | `std_input` | `0` | This should be set to `1` if the uncertainties are included in the [measurements file](#measurements-file).

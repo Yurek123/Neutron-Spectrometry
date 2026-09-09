@@ -46,7 +46,7 @@ Contact email: logan.montgomery@mail.mcgill.ca
 ## Dependencies
 
 1. C++ compiler (e.g. [GCC](https://gcc.gnu.org/))
-    * Must be C++11 compatible (e.g. GCC 4.8.1)
+    * Must be C++17 compatible (e.g. GCC 16.2)
 2. GNU make ([link](https://www.gnu.org/software/make/))
 3. ROOT Data Analysis Framework ([link](https://root.cern.ch/))
     * Can be installed on OSX using [Homebrew](https://brew.sh/)

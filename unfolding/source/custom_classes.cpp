@@ -28,6 +28,9 @@ UnfoldingSettings::UnfoldingSettings() {
     iteration_min = 100;
     iteration_max = 10000;
     plotting_iteration_increment = 0;
+    plotting_iteration_min = 100;
+    plotting_iteration_max = 5000;
+    path_iteration_increment_figures = "";
     // Measurement specs
     dose_mu = 0;
     doserate_mu = 0;
@@ -108,6 +111,12 @@ void UnfoldingSettings::set_setting(std::string settings_name, std::string setti
         this->set_iteration_increment(atoi(settings_value.c_str()));
     else if (settings_name == "plotting_iteration_increment")
         this->set_plotting_iteration_increment(atoi(settings_value.c_str()));
+    else if (settings_name == "plotting_iteration_min")
+        this->set_plotting_iteration_min(atoi(settings_value.c_str()));
+    else if (settings_name == "plotting_iteration_max")
+        this->set_plotting_iteration_max(atoi(settings_value.c_str()));
+    else if (settings_name == "path_iteration_increment_figures")
+        this->set_path_iteration_increment_figures(settings_value);
     else if (settings_name == "beta_min")
         this->set_beta_min(atof(settings_value.c_str()));
     else if (settings_name == "beta_max")
@@ -212,7 +221,19 @@ void UnfoldingSettings::set_iteration_increment(int iteration_increment) {
     this->iteration_increment = iteration_increment;
 }
 void UnfoldingSettings::set_plotting_iteration_increment(int plotting_iteration_increment) {
+    if (plotting_iteration_increment < 0) {
+        throw std::logic_error("plotting_iteration_increment must not be negative");
+    }
     this->plotting_iteration_increment = plotting_iteration_increment;
+}
+void UnfoldingSettings::set_plotting_iteration_min(int plotting_iteration_min) {
+    this->plotting_iteration_min = plotting_iteration_min;
+}
+void UnfoldingSettings::set_plotting_iteration_max(int plotting_iteration_max) {
+    this->plotting_iteration_max = plotting_iteration_max;
+}
+void UnfoldingSettings::set_path_iteration_increment_figures(std::string path_iteration_increment_figures) {
+    this->path_iteration_increment_figures = path_iteration_increment_figures;
 }
 void UnfoldingSettings::set_beta_min(double beta_min) {
     this->beta_min = beta_min;
