@@ -98,7 +98,7 @@ obtain a neutron fluence spectrum.
 
 ### Spectrum figures at different numbers of MLEM iterations
 * If a value is specified for the `plotting_iteration_increment` setting, figures will be generated for different numbers of iterations of the MLEM algorithm. No other output will be generated in this case. 
-* Can be used to decide how many MELM iterations to use in unfolding. 
+* Can be used to decide how many MLEM iterations to use in unfolding. 
 * Output folder of figures can be set using the `path_iteration_increment_figures` setting. 
 
 
