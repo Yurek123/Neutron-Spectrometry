@@ -16,6 +16,7 @@ obtain a neutron fluence spectrum.
     * [Unfolded spectrum CSV file](#unfolded-spectrum-csv-file)
     * [Unfolded spectrum figure](#unfolded-spectrum-figure)
     * [Unfolding report](#unfolding-report)
+    * [Spectrum figures at different numbers of MLEM iterations](#spectrum-figures-at-different-numbers-of-mlem-iterations)
 * [Settings](#settings)
 
 ## Input files
